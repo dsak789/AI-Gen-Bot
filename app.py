@@ -33,9 +33,9 @@ user_query = st.text_input("Enter Your Query",key='userinput')
 if user_query:
     # del st.session_state.userinput
     res = model.generate_content(user_query)
-    user_query = None
+    # user_query = None
     print(res)
-    st.warning("This Page and Bujji's Response will not be for longer Time \n So You can save page as pdf by printing is you want response ")
+    st.warning("This Page and :blue[Bujji's Response] will not be for longer Time \n So You can save page as :red[PDF] by :red[Printing] is you want response ")
     st.write(f'*:blue[You]* :  {user_query}')
     st.write(f'*:orange[BUJJI]* :',  f'\n{res.text}')
     # res_text = res.text
