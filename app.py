@@ -1,8 +1,9 @@
 import streamlit as st
+import time
 import google.generativeai as genai
+import datetime
 
-
-genai.configure(api_key=st.secrets['API_KEY']) 
+genai.configure(api_key= st.secrets['API_KEY']) 
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 if "chats" not in st.session_state:
@@ -18,28 +19,25 @@ st.set_page_config(
 
 st.title("Hi..! I'm :green[Bujji]")
 st.write(":orange[Single] Response Chat bot")
-# loop = 1
-# for chat in st.session_state.chats:
-#     # st.warning(len(st.session_state.chats))
-#     usr = chat['user']
-#     ai = chat['response']
-#     st.write(f'**User:** {usr}')
-#     st.write(f'**Bujji:** {ai}')
-#     loop -=1
-#     break
 
+current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+file_name = f"bujji_response_{current_date}.txt"
 
-user_query = st.text_input("Enter Your Query",key='userinput')
+user_query = st.chat_input("Enter Your Query",key='userinput')
 if user_query:
-    # del st.session_state.userinput
     res = model.generate_content(user_query)
-    # user_query = None
-    print(res)
-    st.warning("This Page and :blue[Bujji's Response] will not be for longer Time \n So You can save page as :red[PDF] by :red[Printing] If you want response ")
-    st.write(f'*:blue[You]* :  {user_query}')
-    st.write(f'*:violet[BUJJI]* :',  f'\n{res.text}')
-    # res_text = res.text
-    # st.session_state.loop +=1
-    # st.session_state.chats.append({'user':user_query, 'response':res_text})
-    # st.experimental_rerun()
-
+    def res_stream():
+        for word in res.text:
+            yield word + ''
+            time.sleep(0.01)
+            
+    st.warning("This Page and :blue[Bujji's Response] will not be for longer TIME \n So You can save Response as :red[TEXT] using below :red[Download Button] If you want response. ")
+    with st.chat_message("user"):
+        st.write(f'*:blue[You]* :  {user_query}')
+    with st.chat_message("ai"):
+        st.write_stream(res_stream)
+        down = st.download_button(label="Download Response as text", 
+                    data=res.text, 
+                    file_name=file_name, 
+                    mime='text/plain')
+    
