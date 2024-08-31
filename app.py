@@ -8,9 +8,6 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 
 if "chats" not in st.session_state:
     st.session_state.chats = []
-# if "loop" not in st.session_state.loop:
-#     st.session_state.loop = 0
-# loop = st.session_state.loop
 st.set_page_config( 
     page_title= "Im Bujji",
     page_icon = "💬"
@@ -20,8 +17,9 @@ st.set_page_config(
 st.title("Hi..! I'm :green[Bujji]")
 st.write(":orange[Single] Response Chat bot")
 
-current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-file_name = f"bujji_response_{current_date}.txt"
+current_date = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
+file_name_txt = f"bujji_response_{current_date}.txt"
+file_name_md = f"bujji_response_{current_date}.md"
 
 user_query = st.chat_input("Enter Your Query",key='userinput')
 if user_query:
@@ -36,8 +34,14 @@ if user_query:
         st.write(f'*:blue[You]* :  {user_query}')
     with st.chat_message("ai"):
         st.write_stream(res_stream)
-        down = st.download_button(label="Download Response as text", 
-                    data=res.text, 
-                    file_name=file_name, 
-                    mime='text/plain')
+        st.caption("You can Download this response either as Textfile or ReadmeFile")
+        st.download_button(label="⬇️Text File", 
+            data=res.text, 
+            file_name=file_name_txt, 
+            mime='text/plain')
+
+        st.download_button(label="⬇️Readme File", 
+            data=res.text, 
+            file_name=file_name_md, 
+            mime='text/plain')
     
